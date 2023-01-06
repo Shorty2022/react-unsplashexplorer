@@ -1,26 +1,31 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import Navbar from "./Components/Navbar";
+import ExplorerPage from "./Components/Pages/ExplorerPage";
+import ErrorPage from "./Components/Pages/ErrorPage";
+import useStorage from "./Hooks/useStorage";
+import { useEffect } from "react";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+export default function App() {
+  const location = useLocation();
+  const setPage = useStorage((state) => state.updatePageNumber);
+
+  useEffect(() => {
+    document.title = location.pathname.slice(1);
+    setPage(1);
+  }, [location, setPage]);
+
+
+  return (   
+    <>
+      <Navbar />
+
+      <Routes>
+        <Route path="latest" element={<ExplorerPage order="latest" />} />
+        <Route path="popular" element={<ExplorerPage order="popular" />} />
+        <Route path="" element={<Navigate to="/latest" />} />;
+        <Route path="*"
+               element={<ErrorPage message="This page was not found." />} />
+      </Routes>
+    </>
   );
 }
-
-export default App;
